@@ -21,7 +21,10 @@ void geek::arrayInitRandom(int* array, const int SIZE, const int range){
 }
 
 void geek::arrayPrint(const int* const array, const int SIZE){
-    for(int i = 0; i < SIZE; ++i) std::cout << array[i] << " ";
+    for(int i = 0; i < SIZE; ++i){
+        std::cout << (array[i]>=10?"":" ");
+        std::cout << array[i] << " ";
+    }
     std::cout << std::endl;
 }
 
