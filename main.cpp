@@ -21,7 +21,7 @@ void quickSort(int* const array, const int begin, const int end){
 // нечётные оставив на своих местах при помощи алгоритма блочной сортировки,
 // то есть массив вида [0 2 8 3 4 6 5 9 8 2 7 3] превратить в [0 2 2 3 4 4 5 9 8 8 7 3]
 void basketSort_onlyEven(int* const array, const int SIZE){
-    const int countBuckets = 200; // Кол-во корзин
+    const int countBuckets = 10; // Кол-во корзин
     int buckets[countBuckets][SIZE + 1]; // (+ 1) - дополнительная ячейка для счётчика внутри корзины
     // Обнуление счётчика корзин
     for(int i = 0; i < countBuckets; ++i) buckets[i][SIZE] = 0;
