@@ -104,6 +104,7 @@ void Stack::push(int data){
 }
 
 int Stack::pop(){
+    if(size == 0) return 0;
     node* it = head;
     head = head->next;
     int data = it->data;
@@ -113,11 +114,12 @@ int Stack::pop(){
 }
 
 int Stack::peek(){
+    if(size == 0) return;
     return head->data;
 }
 
 void Stack::clear(){
-    if(size == 0) return;
+    if(size == 0) return 0;
     while(size > 0) pop();
     size = 0;
     head = nullptr;
