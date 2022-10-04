@@ -1,19 +1,59 @@
+#pragma once
 // На вводном уроке было сказано, что файл "geek" можно реализовать самому
-namespace geek{
-    // Выделяет память для массива и возвращает ссылку на массив
-    int* createArray(const int SIZE);
-    // Удаляет массив
-    void deleteArray(int* array);
-    // Инициализирует массив нулем
-    void arrayInitZero(int* array, const int SIZE);
-    // Инициализирует массив случайным значением больше нуля, но не больше range
-    void arrayInitRandom(int* array, const int SIZE, const int range);
-    // Выводит  массив в терминал
-    void arrayPrint(const int* const array, const int SIZE);
-    // Сортировка вставками, сортирует начиная с элемента с индексом begin и заканчивает элементом с индексом end
-    void sortInsert(int* array, const int begin, const int end);
-    // Разбиение Хоара, возвращает опорный элемент
-    // Сортирует так, что слева от опорного, находятся только элементы меньше опорного,
-    // А справа от опорного находятся только те, которые больше
-    int partition(int* array, const int begin, const int end);
+
+// Task 1
+// Описать очередь с приоритетным исключением
+class Queue{
+private:
+    // Элемент очереди
+    struct node{
+        int data; // Данные
+        int priority; // приоритет
+        node* next; // Указывает на следующий элемент
+    } *head, *tail; // Начало и конец очереди
+    int size; // Размер очереди
+public:
+    // Конструктор
+    Queue();
+    // Деструктор
+    ~Queue();
+    // Добавляет элемент data с приоритетом priority
+    void add(int data, int priority);
+    // Возвращает первый элемент из очереди с наивысшим приоритетом
+    int extract();
+    // Очищает очередь
+    void clear();
+    // Печать очереди в консоль, сначала элемент, потом его приоритет
+    void print();
+    // Возвращает размер очереди
+    int getSize();
+};
+
+// Task 2
+// Реализовать перевод из десятичной в двоичную систему счисления с использованием стека.
+class Stack{
+private:
+    // Элемент стека
+    struct node{
+        int data; // Данные элемента
+        node* next; // Следующий элемент стека
+    } *head; // Указатель на вершину стека
+    int size; // размер стека
+public:
+    // Конструктор
+    Stack();
+    // Деструктор
+    ~Stack();
+    // Добавляет элемент со знаением data
+    void push(int data);
+    // Возвращает значение вершины стека и извлекает элемент
+    int pop();
+    // Возвращает значение вершины стека
+    int peek();
+    // Очищает стек
+    void clear();
+    // Печать стека
+    void print();
+    // Возвращает размер стэка
+    int getSize();
 };
