@@ -1,6 +1,8 @@
 #include <iostream>
 #include "geek.hpp"
 
+// Односвязный список
+
 ListSingl::ListSingl(){
     begin = cur = end = nullptr;
     size = 0;
@@ -104,3 +106,61 @@ bool ListSingl::isSort(){
     }
     return true;
 }
+
+// ==============================================
+
+// Стэк
+
+Stack::Stack(){
+    size = 0;
+    head = nullptr;
+}
+
+Stack::~Stack(){
+    clear();
+}
+
+void Stack::push(char data){
+    node* it = new node;
+    it->data = data;
+    it->next = head;
+    head = it;
+    size++;
+}
+
+char Stack::pop(){
+    if(size == 0) return '_';
+    node* it = head;
+    head = head->next;
+    int data = it->data;
+    delete it;
+    size--;
+    return data;
+}
+
+char Stack::peek(){
+    if(size == 0) return '_';
+    return head->data;
+}
+
+void Stack::clear(){
+    if(size == 0) return;
+    while(size > 0) pop();
+    size = 0;
+    head = nullptr;
+}
+
+void Stack::print(){
+    if(size == 0) return;
+    node* it = head;
+    while(it != nullptr){
+        std::cout << it->data << " " << std::endl;
+        it = it->next;
+    }
+}
+
+int Stack::getSize(){
+    return size;
+}
+
+// ==============================================

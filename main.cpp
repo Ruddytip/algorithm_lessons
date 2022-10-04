@@ -5,7 +5,24 @@
 // Написать программу, которая определяет, является ли введенная скобочная последовательность правильной.
 // Примеры правильных скобочных выражений: (), ([])(), {}(), ([{}]),
 // неправильных — )(, ())({), (, ])}), ([(]) для скобок [,(,{. Например: (2+(2*2)) или [2/{5*(4+7)}]
-
+// 
+// Алгоритм проверяет только скобки, все остальные символы не имеют значения
+bool checkingBrackets(std::string &str){
+    Stack stk;
+    for(int i = 0; i < str.length(); ++i){
+        if(str[i] == '[' || str[i] == '(' || str[i] == '{'){
+            if(str[i] == '[') stk.push(']');
+            if(str[i] == '(') stk.push(')');
+            if(str[i] == '{') stk.push('}');
+            continue;
+        }
+        if(str[i] == ']' || str[i] == ')' || str[i] == '}'){
+            if(stk.pop() != str[i]) return false;
+            continue;
+        }
+    }
+    return true;
+}
 // ================================================================================================
 
 // Task 2
@@ -20,7 +37,11 @@
 
 int main(){
     // Проверка первого задания
-    
+    std::string str("[2/{5*(4+7)}]");
+    std::cout << "Task1:\n";
+    std::cout << "String - " << str << std::endl;
+    std::cout << "Balance brackets is " << (checkingBrackets(str) ? "True" : "False") << std::endl;
+    std::cout << std::endl;
     // ==========================================
 
     // Проверка второго задания
@@ -50,7 +71,7 @@ int main(){
     std::cout << "List: ";
     l3.print();
     std::cout << "Sort is ";
-    std::cout << (l3.isSort() ? "true" : "false") << std::endl;
+    std::cout << (l3.isSort() ? "True" : "False") << std::endl;
     // ==========================================
     return 0;
 }
