@@ -1,139 +1,106 @@
 #include <iostream>
 #include "geek.hpp"
 
-// Очередь
-
-Queue::Queue(){
+ListSingl::ListSingl(){
+    begin = cur = end = nullptr;
     size = 0;
-    head = tail = nullptr;
 }
 
-Queue::~Queue(){
+ListSingl::~ListSingl(){
     clear();
 }
 
-void Queue::add(int data, int priority){
-    node* it = new node;
-    it->data = data;
-    it->priority = priority;
-    it->next = nullptr;
+void ListSingl::pushBegin(int data){
+    cur = new TNode;
+    cur->data = data;
+    cur->next = begin;
+    begin = cur;
+    if(size == 0) end = begin;
+    size++;
+}
+
+void ListSingl::pushEnd(int data){
+    cur = new TNode;
+    cur->data = data;
+    cur->next = nullptr;
+    if(size) end->next = cur;
+    end = cur;
+    if(size == 0) begin = end;
+    size++;
+}
+
+int ListSingl::eraseBegin(){
+    if(size == 0) return -1;
+    int data = begin->data;
+    cur = begin;
+    begin = begin->next;
+    delete cur;
+    size--;
+    if(size == 0) begin = cur = end = nullptr;
+    return data;
+}
+
+int ListSingl::eraseEnd(){
+    if(size == 0) return -1;
+    cur = begin;
+    while(cur->next!=end) cur = cur->next;
+    int data = end->data;
+    delete end;
+    end = cur;
+    size--;
+    end->next = nullptr;
+    if(size == 0) begin = cur = end = nullptr;
+    return data;
+}
+
+void ListSingl::clear(){
     if(size == 0){
-        head = tail = it;
-    }else{
-        tail->next = it;
-        tail = it;
+        begin = cur = end = nullptr;
+        return;
     }
-    size++;
-}
-
-int Queue::extract(){
-    if(size == 0) return 0;
-
-    // Поиска самого большого приоритета
-    int priMax = head->priority;
-    node* it = head;
-    while(it != nullptr){
-        if(it->priority > priMax) priMax = it->priority;
-        it = it->next;
+    for(int i = 0; i < size; ++i){
+        cur = begin;
+        begin = begin->next;
+        delete cur;
     }
-
-    // Поиск элемента с самым большим приоритетом
-    it = head;
-    node* old = nullptr;
-    while(it->priority != priMax){
-        old = it;
-        it = it->next;
-    }
-
-    int data;
-    data = it->data;
-    if(it == head){
-        head = head->next;
-    }else{
-        old->next = it->next;
-    }
-    delete it;
-    size--;
-    if(size == 0) head = tail = nullptr;
-    return data;
-}
-
-void Queue::clear(){
-    if(size == 0) return;
-    while(head != nullptr){
-        node* it = head;
-        head = head->next;
-        delete it;
-    }
+    begin = cur = end = nullptr;
     size = 0;
-    head = tail = nullptr;
 }
 
-void Queue::print(){
+PNode ListSingl::getBegin(){
+    return begin;
+}
+
+PNode ListSingl::getEnd(){
+    return end;
+}
+
+void ListSingl::print(){
+    cur = begin;
+    while(cur){
+        std::cout << cur->data << " ";
+        cur = cur->next;
+    }
+    std::cout << std::endl;
+}
+
+void ListSingl::copy(ListSingl &out){
     if(size == 0) return;
-    node* it = head;
-    while(it != nullptr){
-        std::cout << it->data << " " << it->priority << std::endl;
-        it = it->next;
+    out.clear();
+    cur = begin;
+    for(int i = 0; i < size; ++i){
+        out.pushEnd(cur->data);
+        cur = cur->next;
     }
 }
 
-int Queue::getSize(){
-    return size;
-}
-
-// ==============================================
-
-// Стэк
-
-Stack::Stack(){
-    size = 0;
-    head = nullptr;
-}
-
-Stack::~Stack(){
-    clear();
-}
-
-void Stack::push(int data){
-    node* it = new node;
-    it->data = data;
-    it->next = head;
-    head = it;
-    size++;
-}
-
-int Stack::pop(){
-    node* it = head;
-    head = head->next;
-    int data = it->data;
-    delete it;
-    size--;
-    return data;
-}
-
-int Stack::peek(){
-    return head->data;
-}
-
-void Stack::clear(){
-    if(size == 0) return;
-    while(size > 0) pop();
-    size = 0;
-    head = nullptr;
-}
-
-void Stack::print(){
-    if(size == 0) return;
-    node* it = head;
-    while(it != nullptr){
-        std::cout << it->data << " " << std::endl;
-        it = it->next;
+bool ListSingl::isSort(){
+    if(size == 0) return false;
+    cur = begin;
+    while(cur->next){
+        if(cur->data > cur->next->data)
+            return false;
+        cur = cur->next;
     }
+    return true;
 }
-
-int Stack::getSize(){
-    return size;
-}
-
-// ==============================================
