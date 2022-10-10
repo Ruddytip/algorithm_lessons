@@ -1,115 +1,209 @@
 #include <iostream>
+#include <cmath>
 #include "geek.hpp"
 
-// Односвязный список
+// Дерево
 
-ListSingl::ListSingl(){
-    begin = cur = end = nullptr;
-    size = 0;
+Tree::Tree(){
+    root = nullptr;
+    countNode = depth = 0;
 }
 
-ListSingl::~ListSingl(){
-    clear();
+// Создаёт и инициализирует элемент дерева
+PNode createNode(const int data){
+    PNode ptr = new TNode;
+    ptr->Data = data;
+    ptr->Left = ptr->Right = ptr->Parent = nullptr;
+    return ptr;
 }
 
-void ListSingl::pushBegin(int data){
-    cur = new TNode;
-    cur->data = data;
-    cur->next = begin;
-    begin = cur;
-    if(size == 0) end = begin;
-    size++;
-}
-
-void ListSingl::pushEnd(int data){
-    cur = new TNode;
-    cur->data = data;
-    cur->next = nullptr;
-    if(size) end->next = cur;
-    end = cur;
-    if(size == 0) begin = end;
-    size++;
-}
-
-int ListSingl::eraseBegin(){
-    if(size == 0) return -1;
-    int data = begin->data;
-    cur = begin;
-    begin = begin->next;
-    delete cur;
-    size--;
-    if(size == 0) begin = cur = end = nullptr;
-    return data;
-}
-
-int ListSingl::eraseEnd(){
-    if(size == 0) return -1;
-    cur = begin;
-    while(cur->next!=end) cur = cur->next;
-    int data = end->data;
-    delete end;
-    end = cur;
-    size--;
-    end->next = nullptr;
-    if(size == 0) begin = cur = end = nullptr;
-    return data;
-}
-
-void ListSingl::clear(){
-    if(size == 0){
-        begin = cur = end = nullptr;
-        return;
-    }
-    for(int i = 0; i < size; ++i){
-        cur = begin;
-        begin = begin->next;
-        delete cur;
-    }
-    begin = cur = end = nullptr;
-    size = 0;
-}
-
-PNode ListSingl::getBegin(){
-    return begin;
-}
-
-PNode ListSingl::getEnd(){
-    return end;
-}
-
-void ListSingl::print(){
-    cur = begin;
-    while(cur){
-        std::cout << cur->data << " ";
-        cur = cur->next;
-    }
-    std::cout << std::endl;
-}
-
-void ListSingl::copy(ListSingl &out){
-    if(size == 0) return;
-    out.clear();
-    cur = begin;
-    for(int i = 0; i < size; ++i){
-        out.pushEnd(cur->data);
-        cur = cur->next;
+// Перевод строки в дерево
+void putNodeStr(PNode ptr, std::string &str, int &count){
+    int data = str[count] - 48;
+    ptr->Data = data;
+    if(str[++count] == '('){
+        if(str[++count] != ','){
+            --count;
+            PNode pl = createNode(0);
+            ptr->Left = pl;
+            putNodeStr(pl, str, ++count);
+        }
+        if(str[count] == ','){
+            PNode pr = createNode(0);
+            ptr->Right = pr;
+            putNodeStr(pr, str, ++count);
+        }
+        ++count;
     }
 }
 
-bool ListSingl::isSort(){
-    if(size == 0) return false;
-    cur = begin;
-    while(cur->next){
-        if(cur->data > cur->next->data)
-            return false;
-        cur = cur->next;
+void Tree::putNode(PNode ptr, const int data){
+    if(data < ptr->Data){
+        if(ptr->Left){
+            putNode(ptr->Left, data);
+        }else{
+            ptr->Left = createNode(data);
+            countNode++;
+        }
+    }else{
+        if(ptr->Right){
+            putNode(ptr->Right, data);
+        }else{
+            ptr->Right = createNode(data);
+            countNode++;
+        }
+    }
+}
+
+// Проверка баланса скобок
+bool checkingBrackets(std::string &str){
+    if(str.length() == 0) return false;
+    Stack stk;
+    for(int i = 0; i < str.length(); ++i){
+        if(str[i] == '[' || str[i] == '(' || str[i] == '{'){
+            if(str[i] == '[') stk.push(']');
+            if(str[i] == '(') stk.push(')');
+            if(str[i] == '{') stk.push('}');
+            continue;
+        }
+        if(str[i] == ']' || str[i] == ')' || str[i] == '}'){
+            if(stk.pop() != str[i]) return false;
+            continue;
+        }
     }
     return true;
 }
 
-// ==============================================
+Tree::Tree(std::string str){
+    if(!checkingBrackets(str)){
+        std::cerr << "Error brackets!!!\n";
+        return;
+    }
+    int count = 0;
+    root = createNode(0);
+    putNodeStr(root, str, count);
+}
 
-// Стэк
+Tree::~Tree(){
+    clear();
+}
+
+void Tree::push(const int data){
+    if(countNode == 0){
+        root = createNode(data);
+        countNode++;
+    }else{
+        putNode(root, data);
+    }
+}
+
+// Удаляет элемент дерева, а так же все его дочерние вершины
+void eraseBranch(PNode ptr){
+    if(ptr->Left) eraseBranch(ptr->Left);
+    if(ptr->Right) eraseBranch(ptr->Right);
+    delete ptr;
+}
+
+void Tree::clear(){
+    if(countNode == 0) return;
+    eraseBranch(root);
+    root = nullptr;
+    countNode = depth = 0;
+}
+
+PNode Tree::getRoot(){
+    return root;
+}
+
+int Tree::getCountNode(){
+    return countNode;
+}
+
+// Обновляет значение глубины дерева
+int updateDepth(PNode ptr, const int count){
+    if(!ptr) return count;
+    int maxL = updateDepth(ptr->Left, count + 1);
+    int maxR = updateDepth(ptr->Right, count + 1);
+    return (maxL > maxR ? maxL : maxR);
+}
+
+int Tree::getDepth(){
+    depth = updateDepth(root, 0);
+    return depth;
+}
+
+void Tree::nodeToStr(PNode ptr, const int count, std::string* str){
+    // Заполнение пробелами пустых поддеревьев
+    if(!ptr){
+        for(int i = count; i < depth; ++i)
+            str[i]+= std::string(pow(2, depth - count - 1) * 2, ' ');
+        return;
+    }
+    nodeToStr(ptr->Left, count + 1, str);
+    int delta = pow(2, depth - count - 1); // Длина печати от края и до элемента
+
+    // Отрисовка левой стрелки
+    if(ptr->Left){
+        str[count]+= std::string((delta - 1) / 2, ' ');
+        if(count < depth - 1) str[count]+='+';
+        str[count]+= std::string((delta - 1) / 2, '-');
+    }else{
+        str[count]+= std::string(delta - 1, ' ');
+    }
+
+    str[count]+= char(ptr->Data + 48);
+
+    // Отрисовка правой стрелки
+    if(ptr->Right){
+        str[count]+= std::string(delta / 2 - 1, '-');
+        if(count < depth - 1) str[count]+='+';
+        str[count]+= std::string(delta / 2, ' ');
+    }else{
+        str[count]+= std::string(delta, ' ');
+    }
+    nodeToStr(ptr->Right, count + 1, str);
+}
+
+void Tree::printDiagram(){
+    depth = updateDepth(root, 0);
+    if(depth == 0) return;
+    std::string* str = new std::string[depth];
+    for(int i = 0; i < depth; ++i) str[i] = "";
+    nodeToStr(root, 0, str);
+    for(int i = 0; i < depth; ++i) std::cout << str[i] << std::endl;
+    delete[] str;
+}
+
+// 
+void prin(PNode ptr){
+    if(ptr->Left) prin(ptr->Left);
+    std::cout << ptr->Data << ' ';
+    if(ptr->Right) prin(ptr->Right);
+}
+
+void Tree::print(){
+    if(root) prin(root);
+    std::cout << std::endl;
+}
+
+// 
+int countN(PNode ptr, bool& flag){
+    if(!ptr) return 0;
+    int left = countN(ptr->Left, flag);
+    int right = countN(ptr->Right, flag);
+    if(abs(left - right) > 1) flag = false;
+    return left + right + 1;
+}
+
+bool Tree::isBalanced(){
+    if(countNode == 0) return false;
+    bool flag = true;
+    countN(root, flag);
+    return flag;
+}
+
+// ==============================================
+// Стек для проверки баланса скобок
 
 Stack::Stack(){
     size = 0;
@@ -162,5 +256,3 @@ void Stack::print(){
 int Stack::getSize(){
     return size;
 }
-
-// ==============================================
