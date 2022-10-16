@@ -1,58 +1,62 @@
 #include <iostream>
-#include "geek.hpp"
 
 // Task 1
-// Реализовать обход в глубину с использованием стека
-// Реализованно в файле geek.hpp в классе Graph
+// Реализовать простейшую хеш-функцию. На вход функции подается строка, на выходе сумма кодов символов.
+int getHesh(const std::string &str){
+    int result = 0;
+    for(int i = 0; i < str.length(); ++i) result+= int(str[i]);
+    return result;
+}
 // ================================================================================================
 
 // Task 2
-// Моделируем робот поисковой системы. Дан готовый простой граф с циклическими связями.
-// Нужно обойти этот граф двумя способами и подсчитать количество ссылок на каждый из узлов графа (полустепень захода):
-//  - обход графа рекурсивной функцией (с подсчётом только смежных со стартовой вершин)
-//  - обход графа по матрице смежности (с подсчётом всех вершин графа)
-// В конце обхода вывести два получившихся списка всех узлов в порядке уменьшения количества ссылок на них.
-// Реализованно в файле geek.hpp в классе Graph
+// Имеются монеты номиналом 50, 10, 5, 2, 1 коп.
+// Напишите функцию которая минимальным количеством монет наберет сумму 98 коп.
+// Для решения задачи используйте “жадный” алгоритм.
+// 
+// Предполагается, что в наличии всегда есть монеты с номиналом 1
+void calculateCoin(const int summ, const int &size, const int* range, int* count){
+    int result = summ;
+    while(result){
+        int max = 0;
+        int index = 0;
+        for(int i = 0; i < size; ++i) if(range[i]>max && range[i]<=result){
+            max = range[i];
+            index = i;
+        }
+        result-=max;
+        count[index]++;
+    }
+}
+
+void printCoin(const int &size, const int* range, const int* count){
+for(int i = 0; i < size; ++i)
+    std::cout << "Coin " << range[i] << " - " << count[i] << " pieces" << std::endl;
+}
 // ================================================================================================
 
 int main(){
     // Проверка первого задания
-    std::cout << "Task 1:\n";
-    const int SIZE1 = 9;
-    int matrix1[SIZE1][SIZE1] = {
-        {0, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 1, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0}
-    };
-    Graph g1(SIZE1, &matrix1[0][0]);
-    g1.printDepth();
+    std::cout << "Task1: \n";
+    const std::string INPUT = "test";
+    std::cout << "String input: " << INPUT << std::endl;
+    std::cout << "Hesh result:  " << getHesh(INPUT) << std::endl;
     std::cout << std::endl;
     // ==========================================
 
     // Проверка второго задания
-    std::cout << "Task 2:\n";
-    const int SIZE2 = 8;
-    int matrix2[SIZE2][SIZE2] = {
-        {0, 1, 0, 0, 0, 0, 1, 1},
-        {1, 0, 1, 1, 0, 0, 0, 0},
-        {0, 1, 0, 1, 1, 0, 0, 0},
-        {0, 1, 1, 0, 1, 1, 1, 1},
-        {0, 0, 1, 1, 0, 1, 0, 0},
-        {0, 0, 0, 1, 1, 0, 1, 0},
-        {1, 0, 0, 1, 0, 1, 0, 1},
-        {1, 0, 0, 1, 0, 0, 1, 0}
-    };
-    Graph g2(SIZE2, &matrix2[0][0]);
-    std::cout << "Matrix out:\n";
-    g2.printTraversal(0);
-    std::cout << "Recur out:\n";
-    g2.printTraversal(1);
+    std::cout << "Task2: \n";
+    const int SUMM = 98;
+    const int SIZE = 5;
+    const int RANGE[SIZE] = {1, 2, 5, 10, 50};
+    int result[SIZE] = {0};
+    std::cout << "Total summ: " << SUMM << std::endl;
+    std::cout << "Range coins: ";
+    for(int i = 0; i < SIZE; ++i) std::cout << RANGE[i] << ", ";
+    std::cout << std::endl;
+    calculateCoin(SUMM, SIZE, RANGE, result);
+    printCoin(SIZE, RANGE, result);
+    std::cout << std::endl;
     // ==========================================
     return 0;
 }
