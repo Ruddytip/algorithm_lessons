@@ -1,61 +1,92 @@
 #include <iostream>
 
 // Task 1
-// Реализовать простейшую хеш-функцию. На вход функции подается строка, на выходе сумма кодов символов.
-int getHesh(const std::string &str){
-    int result = 0;
-    for(int i = 0; i < str.length(); ++i) result+= int(str[i]);
-    return result;
+// Реализовать шифрование и расшифровку цезаря с передаваемым в функцию сообщением и ключом
+// 
+// Ограничений только на символы алфавита не было
+std::string EncryptCaesar(const std::string &str, const int key){
+    if(str.length() == 0 || key == 0) return str;
+    std::string out = str;
+    for(int i = 0; i < str.length(); ++i) out[i]+=key;
+    return out;
+}
+std::string DecipherCaesar(const std::string &str, const int key){
+    if(str.length() == 0 || key == 0) return str;
+    std::string out = str;
+    for(int i = 0; i < str.length(); ++i) out[i]-=key;
+    return out;
 }
 // ================================================================================================
 
 // Task 2
-// Имеются монеты номиналом 50, 10, 5, 2, 1 коп.
-// Напишите функцию которая минимальным количеством монет наберет сумму 98 коп.
-// Для решения задачи используйте “жадный” алгоритм.
-// 
-// Предполагается, что в наличии всегда есть монеты с номиналом 1
-void calculateCoin(const int summ, const int &size, const int* range, int* count){
-    int result = summ;
-    while(result){
-        int max = 0;
-        int index = 0;
-        for(int i = 0; i < size; ++i) if(range[i]>max && range[i]<=result){
-            max = range[i];
-            index = i;
-        }
-        result-=max;
-        count[index]++;
-    }
-}
+// Реализовать шифрование и расшифровку перестановками с передаваемым в функцию сообщением и количеством столбцов
+std::string EncryptionPermutation(const std::string &str, const int key){
+    if(key < 2 || key >= str.length()) return str;
+    int x = key;
+    int y = str.length() / key + 1;
+    char* matrix = new char[x * y];
 
-void printCoin(const int &size, const int* range, const int* count){
-for(int i = 0; i < size; ++i)
-    std::cout << "Coin " << range[i] << " - " << count[i] << " pieces" << std::endl;
+    int index = 0;
+    for(int j = 0; j < y; ++j)
+        for(int i = 0; i < x; ++i)
+            matrix[j * x + i] = (index < str.length() ? str[index++] : ' ');
+
+    std::string out = "";
+    for(int j = 0; j < y; ++j)
+        for(int i = 0; i < x; ++i)
+            out+=matrix[i * y + j];
+
+    delete[] matrix;
+    return out;
+}
+std::string DecryptionPermutation(const std::string &str, const int key){
+    if(key < 2 || key >= str.length()) return str;
+    int x = key;
+    int y = str.length() / key;
+    char* matrix = new char[x * y];
+
+    int index = 0;
+    for(int j = 0; j < y; ++j)
+        for(int i = 0; i < x; ++i)
+            matrix[i * y + j] = str[index++];
+
+    std::string out = "";
+    for(int j = 0; j < y; ++j)
+        for(int i = 0; i < x; ++i)
+            out+=matrix[j * x + i];
+
+    // Удаление лишних пробелов, которые были вставленны в конец строки
+    index = out.length() - 1;
+    for(;out[index] == ' ';--index){}
+    out.erase(index + 1, out.length() - 1);
+
+    delete[] matrix;
+    return out;
 }
 // ================================================================================================
 
 int main(){
     // Проверка первого задания
     std::cout << "Task1: \n";
-    const std::string INPUT = "test";
-    std::cout << "String input: " << INPUT << std::endl;
-    std::cout << "Hesh result:  " << getHesh(INPUT) << std::endl;
+    const int key1 = 15;
+    std::string input1 = "Hello world!!! 1234567890";
+    std::string intermediate1 = EncryptCaesar(input1, key1);
+    std::string output1 = DecipherCaesar(intermediate1, key1);
+    std::cout << "Input string:        " << input1 << std::endl;
+    std::cout << "Intermediate string: " << intermediate1 << std::endl;
+    std::cout << "Output string:       " << output1 << std::endl;
     std::cout << std::endl;
     // ==========================================
 
     // Проверка второго задания
     std::cout << "Task2: \n";
-    const int SUMM = 98;
-    const int SIZE = 5;
-    const int RANGE[SIZE] = {1, 2, 5, 10, 50};
-    int result[SIZE] = {0};
-    std::cout << "Total summ: " << SUMM << std::endl;
-    std::cout << "Range coins: ";
-    for(int i = 0; i < SIZE; ++i) std::cout << RANGE[i] << ", ";
-    std::cout << std::endl;
-    calculateCoin(SUMM, SIZE, RANGE, result);
-    printCoin(SIZE, RANGE, result);
+    const int key2 = 15;
+    std::string input2 = "Hello world!!! 1234567890";
+    std::string intermediate2 = EncryptionPermutation(input2, key2);
+    std::string output2 = DecryptionPermutation(intermediate2, key2);
+    std::cout << "Input string:        " << input2 << std::endl;
+    std::cout << "Intermediate string: " << intermediate2 << std::endl;
+    std::cout << "Output string:       " << output2 << std::endl;
     std::cout << std::endl;
     // ==========================================
     return 0;
